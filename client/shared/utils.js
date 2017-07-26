@@ -2,16 +2,15 @@ import request from 'superagent'
 
 /**
  * @param  {Object} options
- * @return {Object} Return Promise
+ * @return {Object}         Return Promise
  */
 function ajax(options) {
     const defaults = {
         url: null,
         type: 'post',
-        data: {},
-        'Content-Type': 'application/json'
+        data: {}
     }
-    let promise
+    let promise, action
 
     options = Object.assign({}, defaults, options)
     promise = request[options.type](options.url).withCredentials()
@@ -20,9 +19,10 @@ function ajax(options) {
             promise.set(key, options[key])
         }
     })
+    action = options.type === 'get' ? 'query' : 'send'
 
     return new Promise(resolve => {
-        promise.send(options.data).then(res => {
+        promise[action](options.data).then(res => {
             resolve(res.body)
         }).catch(err => {
             console.log(err)
@@ -48,5 +48,5 @@ function getURLParams() {
 
 export default {
     ajax,
-    getUrlParams
+    getURLParams
 }
